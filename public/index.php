@@ -1,7 +1,10 @@
 <?php
 require_once "../app/models/Model.php";
 require_once "../app/models/User.php";
+require_once "../app/models/Post.php";
 require_once "../app/controllers/UserController.php";
+require_once "../app/controllers/PostController.php";
+
 
 //set our env variables
 $env = parse_ini_file('../.env');
@@ -11,6 +14,7 @@ define('DBUSER', $env['DBUSER']);
 define('DBPASS', $env['DBPASS']);
 
 use app\controllers\UserController;
+use app\controllers\PostController;
 
 //get uri without query strings
 $uri = strtok($_SERVER["REQUEST_URI"], '?');
@@ -20,6 +24,8 @@ $uriArray = explode("/", $uri);
 //0 = ""
 //1 = users
 //2 = 1
+
+$routeMatched = false;
 
 
 //get all or a single user
@@ -57,30 +63,67 @@ if ($uriArray[1] === 'api' && $uriArray[2] === 'users' && $_SERVER['REQUEST_METH
 
 //views
 
-
 if ($uri === '/users-add' && $_SERVER['REQUEST_METHOD'] === 'GET') {
     $userController = new UserController();
     $userController->usersAddView();
+    $routeMatched = true;
+
 }
 
 if ($uriArray[1] === 'users-update' && $_SERVER['REQUEST_METHOD'] === 'GET') {
     $userController = new UserController();
     $userController->usersUpdateView();
+    $routeMatched = true;
+
 }
 
 if ($uriArray[1] === 'users-delete' && $_SERVER['REQUEST_METHOD'] === 'GET') {
     $userController = new UserController();
     $userController->usersDeleteView();
+    $routeMatched = true;
+
 }
 
 if ($uriArray[1] === '' && $_SERVER['REQUEST_METHOD'] === 'GET') {
     $userController = new UserController();
     $userController->usersView();
+    $routeMatched = true;
+
 }
 
-include '../public/assets/views/notFound.html';
-exit();
+//Post
+if ($uri === '/posts' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $postController = new PostController();
+    $postController->postsView();
+    $routeMatched = true;
+}
 
-?>
+if ($uri === '/posts-add' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $postController = new PostController();
+    $postController->postsAddView();
+    $routeMatched = true;
+}
 
+if ($uriArray[1] === 'posts-update' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $postController = new PostController();
+    $postController->postsUpdateView();
+    $routeMatched = true;
+}
+
+if ($uriArray[1] === 'posts-delete' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $postController = new PostController();
+    $postController->postsDeleteView();
+    $routeMatched = true;
+}
+
+if ($uri === '/' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $postController = new PostController();
+    $postController->postsView();
+    $routeMatched = true;
+}
+
+if (!$routeMatched) {
+    include '../public/assets/views/notFound.html';
+    exit();
+}
 
